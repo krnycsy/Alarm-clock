@@ -1,0 +1,23 @@
+document.getElementById("set").addEventListener("click", () => {
+  const m = parseFloat(document.getElementById("minutes").value);
+  if (isNaN(m) || m <= 0) return;
+
+  chrome.storage.local.get(["alarms"], (res) => {
+    const list = res.alarms || [];
+
+    const alarm = {
+      id: Date.now().toString(),
+      minutes: m,
+      repeat: "none",
+      enabled: true
+    };
+
+    list.push(alarm);
+
+    chrome.storage.local.set({ alarms: list }, () => {
+      chrome.alarms.create(alarm.id, {
+        delayInMinutes: m
+      });
+    });
+  });
+});
